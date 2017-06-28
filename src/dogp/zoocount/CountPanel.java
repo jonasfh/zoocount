@@ -3,9 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dogp;
+package dogp.zoocount;
 
 import java.awt.event.KeyListener;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /**
  *
@@ -21,14 +25,16 @@ public class CountPanel extends javax.swing.JPanel {
     public CountPanel(String text, int value) {
         initComponents();
         jLabel1.setText(text);
+        character = text;
         count.setText(Integer.toString(value));
     }
-    
+
     @Override
     public void addKeyListener(KeyListener l) {
         super.addKeyListener(l);
         jLabel1.addKeyListener(l);
         count.addKeyListener(l);
+        settingsButton.addKeyListener(l);
     }
     public String getValue() {
         return count.getText();
@@ -48,12 +54,20 @@ public class CountPanel extends javax.swing.JPanel {
 
         jLabel1 = new javax.swing.JLabel();
         count = new javax.swing.JLabel();
+        settingsButton = new javax.swing.JButton();
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("jLabel1");
+        jLabel1.setText("A");
 
         count.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         count.setText("0");
+
+        settingsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dogp/resources/settings.png"))); // NOI18N
+        settingsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                settingsButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -62,8 +76,11 @@ public class CountPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)
-                    .addComponent(count, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(count, javax.swing.GroupLayout.DEFAULT_SIZE, 18, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(settingsButton))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -71,15 +88,78 @@ public class CountPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(count)
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addComponent(count)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(settingsButton)
+                        .addContainerGap())))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void settingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsButtonActionPerformed
+        JTextField name = new JTextField(this.name);
+        JTextField shortname = new JTextField(this.shortname);
+        JComponent[] input = new JComponent[] {
+            new JLabel("Data name"),
+            name,
+            new JLabel("Display name (short)"),
+            shortname
+        };
+        int result = JOptionPane.showConfirmDialog(this, input);
+        if (result == JOptionPane.OK_OPTION) {
+            this.name = name.getText().trim();
+            this.shortname = shortname.getText().trim();
+            String display = this.character;
+            if (this.shortname.length()>0) {
+                display += ": " + this.shortname;
+            }
+            this.jLabel1.setText(display);
+        }
+    }//GEN-LAST:event_settingsButtonActionPerformed
+
+    private String name = "";
+    private String shortname = "";
+    private String character = "";
+
+    @Override
+    public String toString() {
+        StringBuilder output = new StringBuilder();
+        String separator = Settings.getInstance().getOption(
+            "csv.separator", ","
+        );
+        String quote = Settings.getInstance().getOption(
+            "csv.quote", "\""
+        );
+
+        String[] strings= new String[] {
+            quote,
+            character,
+            quote,
+            separator,
+            quote,
+            shortname,
+            quote,
+            separator,
+            quote,
+            name,
+            quote,
+            separator,
+            count.getText(),
+        };
+        for (String s : strings) {
+            output.append(s);
+        }
+        return output.toString();
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel count;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton settingsButton;
     // End of variables declaration//GEN-END:variables
 }

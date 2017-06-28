@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dogp;
+package dogp.zoocount;
 
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -11,6 +11,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 /**
  *
@@ -26,6 +31,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     private MainFrame() {
         initComponents();
         moreComponents();
+        initSettings();
     }
     private void moreComponents(){
         jPanel2.setLayout(new GridLayout(7, 9, 3, 3));
@@ -55,11 +61,9 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     private void addPanel(String key){
         CountPanel value;
         if (" ".equals(key)) {
-            value = new CountPanel("SPACE", 0);
+            key = "_";
         }
-        else {
-            value = new CountPanel(key, 0);
-        }
+        value = new CountPanel(key, 0);
         value.addKeyListener(this);
         value.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         data.put(key, value);
@@ -97,9 +101,14 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         title = new javax.swing.JLabel();
         countHistory = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        saveMenu = new javax.swing.JMenuItem();
+        loadMenu = new javax.swing.JMenuItem();
+        preferencesMenu = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(750, 600));
 
         title.setFont(new java.awt.Font("Lucida Grande", 0, 36)); // NOI18N
         title.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -130,8 +139,36 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 390, Short.MAX_VALUE)
+            .addGap(0, 374, Short.MAX_VALUE)
         );
+
+        jMenu1.setText("File");
+
+        saveMenu.setText("Save");
+        jMenu1.add(saveMenu);
+
+        loadMenu.setText("Open");
+        loadMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadMenuActionPerformed(evt);
+            }
+        });
+        jMenu1.add(loadMenu);
+
+        preferencesMenu.setText("Preferences...");
+        preferencesMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                preferencesMenuActionPerformed(evt);
+            }
+        });
+        jMenu1.add(preferencesMenu);
+
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Edit");
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -145,12 +182,29 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void preferencesMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_preferencesMenuActionPerformed
+        JTextArea text = new JTextArea();
+        text.setText(Settings.getInstance().toString());
+        JComponent[] input = new JComponent[] {
+            new JLabel("Preferences"),
+            text,
+        };
+        int result = JOptionPane.showConfirmDialog(this, input);
+        if (result == JOptionPane.OK_OPTION) {
+            Settings.getInstance().importPreferences(text.getText());
+        }
+
+    }//GEN-LAST:event_preferencesMenuActionPerformed
+
+    private void loadMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadMenuActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_loadMenuActionPerformed
 
     /**
      * @param args the command line arguments
@@ -189,8 +243,14 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel countHistory;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JMenuItem loadMenu;
+    private javax.swing.JMenuItem preferencesMenu;
+    private javax.swing.JMenuItem saveMenu;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
 
@@ -236,5 +296,15 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
 
     @Override
     public void keyReleased(KeyEvent e) {
+    }
+
+    private void initSettings() {
+        Settings s = Settings.getInstance();
+        if ("".equals(s.getOption("csv.separator"))) {
+            s.setOption("csv.separator", ",");
+        }
+        if ("".equals(s.getOption("csv.quote"))) {
+            s.setOption("csv.quote", "\"");
+        }
     }
 }
