@@ -24,7 +24,7 @@ public class CountPanel extends javax.swing.JPanel {
      */
     public CountPanel(String text, int value) {
         initComponents();
-        jLabel1.setText(text);
+        charAndName.setText(text);
         character = text;
         count.setText(Integer.toString(value));
     }
@@ -32,7 +32,7 @@ public class CountPanel extends javax.swing.JPanel {
     @Override
     public void addKeyListener(KeyListener l) {
         super.addKeyListener(l);
-        jLabel1.addKeyListener(l);
+        charAndName.addKeyListener(l);
         count.addKeyListener(l);
         settingsButton.addKeyListener(l);
     }
@@ -52,12 +52,12 @@ public class CountPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        charAndName = new javax.swing.JLabel();
         count = new javax.swing.JLabel();
         settingsButton = new javax.swing.JButton();
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("A");
+        charAndName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        charAndName.setText("A");
 
         count.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         count.setText("0");
@@ -80,14 +80,14 @@ public class CountPanel extends javax.swing.JPanel {
                         .addComponent(count, javax.swing.GroupLayout.DEFAULT_SIZE, 18, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(settingsButton))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(charAndName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addComponent(charAndName)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(16, 16, 16)
@@ -117,7 +117,7 @@ public class CountPanel extends javax.swing.JPanel {
             if (this.shortname.length()>0) {
                 display += ": " + this.shortname;
             }
-            this.jLabel1.setText(display);
+            this.charAndName.setText(display);
         }
     }//GEN-LAST:event_settingsButtonActionPerformed
 
@@ -158,8 +158,8 @@ public class CountPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel charAndName;
     private javax.swing.JLabel count;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JButton settingsButton;
     // End of variables declaration//GEN-END:variables
 }
