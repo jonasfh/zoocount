@@ -42,6 +42,25 @@ public class CountPanel extends javax.swing.JPanel {
     public void setValue(String s) {
         count.setText(s);
     }
+    public String getChar() {
+        return character;
+    }
+    public String getCharName() {
+        return name;
+    }
+    public String getCharShortName() {
+        return shortname;
+    }
+    public void setChar(String s) {
+        character = s;
+    }
+    public void setCharName(String s) {
+        name = s;
+    }
+    public void setCharShortName(String s) {
+        shortname = s;
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -101,8 +120,8 @@ public class CountPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void settingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsButtonActionPerformed
-        JTextField name = new JTextField(this.name);
-        JTextField shortname = new JTextField(this.shortname);
+        JTextField name = new JTextField(getCharName());
+        JTextField shortname = new JTextField(getCharShortName());
         JComponent[] input = new JComponent[] {
             new JLabel("Data name"),
             name,
@@ -111,8 +130,8 @@ public class CountPanel extends javax.swing.JPanel {
         };
         int result = JOptionPane.showConfirmDialog(this, input);
         if (result == JOptionPane.OK_OPTION) {
-            this.name = name.getText().trim();
-            this.shortname = shortname.getText().trim();
+            setCharName(name.getText().trim());
+            setCharShortName(shortname.getText().trim());
             String display = this.character;
             if (this.shortname.length()>0) {
                 display += ": " + this.shortname;
