@@ -109,6 +109,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(800, 750));
 
         title.setFont(new java.awt.Font("Lucida Grande", 0, 36)); // NOI18N
         title.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -135,7 +136,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 656, Short.MAX_VALUE)
+            .addGap(0, 695, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
