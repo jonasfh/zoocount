@@ -41,6 +41,12 @@ public class Settings {
     }
     private Settings() {
         options = Preferences.userRoot().node(this.getClass().getName());
+        // Set some defaults
+        if ("".equals(options.get("csv.separator", ""))) {
+            settings.setOption("csv.separator", ",");
+            settings.setOption("csv.quote", "\"");
+            options.putBoolean("general.saveAllValues", false);
+        }
     }
     @Override
     public String toString() {
