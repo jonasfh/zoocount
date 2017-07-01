@@ -145,6 +145,11 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         jMenu1.setText("File");
 
         saveMenu.setText("Save");
+        saveMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveMenuActionPerformed(evt);
+            }
+        });
         jMenu1.add(saveMenu);
 
         loadMenu.setText("Open");
@@ -205,6 +210,25 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     private void loadMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadMenuActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_loadMenuActionPerformed
+
+    private void saveMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuActionPerformed
+        try {
+            String file = "/Users/jonas/myFile.xlsx";
+            Workbook wb = new HSSFWorkbook();
+            Sheet s = wb.createSheet("Data");
+            Row r1 = s.createRow(0);
+            r1.createCell(4).setCellValue(4.5);
+            r1.createCell(5).setCellValue("Hello");
+            OutputStream out = new FileOutputStream(file);
+            wb.write(out);
+            out.close();
+
+        } catch (IOException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (EncryptedDocumentException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_saveMenuActionPerformed
 
     /**
      * @param args the command line arguments
