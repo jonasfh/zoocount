@@ -9,17 +9,24 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
+import javax.swing.filechooser.FileFilter;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -33,7 +40,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 public class MainFrame extends javax.swing.JFrame implements KeyListener{
 
     private final HashMap<String, CountPanel> data = new HashMap(); 
-
+    private String file = null;
     /**
      * Creates new form MainFrame
      */
@@ -45,9 +52,6 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     private void moreComponents(){
         jPanel2.setLayout(new GridLayout(7, 9, 3, 3));
         // Numbers 0-9
-//        CountPanel[] data = new CountPanel[63];
-        String key;
-        CountPanel value;
         for (int i=0; i<10; i++) {
             addPanel(Integer.toString(i));
         }
@@ -60,7 +64,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
             addPanel(Character.toString((char)i));
         }
         // ...and the spacebar
-        addPanel(" ");  
+        addPanel("_");
         this.addKeyListener(this);
         jPanel1.addKeyListener(this);
         jPanel2.addKeyListener(this);
@@ -69,7 +73,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     
     private void addPanel(String key){
         CountPanel value;
-        if (" ".equals(key)) {
+        if ("_".equals(key)) {
             key = "_";
         }
         value = new CountPanel(key, 0);
@@ -223,16 +227,61 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
 
     private void saveMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuActionPerformed
         try {
-            String file = "/Users/jonas/myFile.xlsx";
+            if (this.file == null) {
+                JFileChooser fc = new JFileChooser();
+                fc.setAcceptAllFileFilterUsed(false);
+                fc.setFileFilter(new FileFilter() {
+                    @Override
+                    public boolean accept(File f) {
+                        return f.getName().endsWith(".xlsx");
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "Excel spreadsheet files (.xlsx)";
+                    }
+                });
+                int i = fc.showSaveDialog(main);
+                if (i == JFileChooser.CANCEL_OPTION) {
+                    return;
+                }
+                else {
+                    this.file = fc.getSelectedFile().getName();
+                    if (!this.file.endsWith(".xlsx")) {
+                        this.file += ".xlsx";
+                    }
+                }
+            }
             Workbook wb = new HSSFWorkbook();
             Sheet s = wb.createSheet("Data");
-            Row r1 = s.createRow(0);
-            r1.createCell(4).setCellValue(4.5);
-            r1.createCell(5).setCellValue("Hello");
+
+            List<CountPanel> list = new ArrayList<>(data.values());
+            Collections.sort(list);
+            Iterator<CountPanel> iter = list.iterator();
+            boolean all = Boolean.parseBoolean(
+                Settings.getInstance().getOption("general.saveAllValues")
+            );
+            int row = 0;
+            Row r = s.createRow(row++);
+            r.createCell(0).setCellValue("Name");
+            r.createCell(1).setCellValue("Short name");
+            r.createCell(2).setCellValue("Character");
+            r.createCell(3).setCellValue("Count");
+
+            for (int i=0; i<list.size(); i++) {
+                CountPanel p = list.get(i);
+                if (!all && "0".equals(p.getValue())) {
+                    continue;
+                }
+                r = s.createRow(row++);
+                r.createCell(0).setCellValue(p.getCharName());
+                r.createCell(1).setCellValue(p.getCharShortName());
+                r.createCell(2).setCellValue(p.getChar());
+                r.createCell(3).setCellValue(p.getValue());
+            }
             OutputStream out = new FileOutputStream(file);
             wb.write(out);
             out.close();
-
         } catch (IOException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (EncryptedDocumentException ex) {

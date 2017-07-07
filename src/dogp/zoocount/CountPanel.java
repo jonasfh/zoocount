@@ -15,7 +15,9 @@ import javax.swing.JTextField;
  *
  * @author jonas
  */
-public class CountPanel extends javax.swing.JPanel {
+public class CountPanel extends javax.swing.JPanel
+implements Comparable<CountPanel>{
+
 
     /**
      * Creates new form CountPanel
@@ -27,6 +29,7 @@ public class CountPanel extends javax.swing.JPanel {
         charAndName.setText(text);
         character = text;
         count.setText(Integer.toString(value));
+        setOrdering(CountPanel.counter++);
     }
 
     @Override
@@ -59,6 +62,19 @@ public class CountPanel extends javax.swing.JPanel {
     }
     public void setCharShortName(String s) {
         shortname = s;
+    }
+   /**
+     * @return the ordering
+     */
+    public int getOrdering() {
+        return ordering;
+    }
+
+    /**
+     * @param ordering the ordering to set
+     */
+    public void setOrdering(int ordering) {
+        this.ordering = ordering;
     }
 
 
@@ -143,6 +159,8 @@ public class CountPanel extends javax.swing.JPanel {
     private String name = "";
     private String shortname = "";
     private String character = "";
+    private int ordering = 0;
+    private static int counter = 0;
 
     @Override
     public String toString() {
@@ -181,4 +199,9 @@ public class CountPanel extends javax.swing.JPanel {
     private javax.swing.JLabel count;
     private javax.swing.JButton settingsButton;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public int compareTo(CountPanel o) {
+        return this.getOrdering() - o.getOrdering();
+    }
 }
