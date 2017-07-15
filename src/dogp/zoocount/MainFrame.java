@@ -111,10 +111,11 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel3 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         title = new javax.swing.JLabel();
         countHistory = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         saveMenu = new javax.swing.JMenuItem();
@@ -127,37 +128,38 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(800, 750));
 
-        title.setFont(new java.awt.Font("Lucida Grande", 0, 36)); // NOI18N
-        title.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        title.setText("Start counting");
-
-        countHistory.setName(""); // NOI18N
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(countHistory, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(countHistory, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
+        jPanel3.setLayout(new java.awt.BorderLayout());
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 695, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 374, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
+
+        jPanel3.add(jPanel2, java.awt.BorderLayout.CENTER);
+
+        jPanel1.setLayout(new java.awt.BorderLayout(10, 30));
+
+        title.setFont(new java.awt.Font("Lucida Grande", 0, 36)); // NOI18N
+        title.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        title.setText("Start counting");
+        jPanel1.add(title, java.awt.BorderLayout.NORTH);
+
+        countHistory.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        countHistory.setFocusable(false);
+        countHistory.setMaximumSize(new java.awt.Dimension(400, 40));
+        countHistory.setName(""); // NOI18N
+        countHistory.setPreferredSize(new java.awt.Dimension(400, 40));
+        countHistory.setRequestFocusEnabled(false);
+        countHistory.setSize(new java.awt.Dimension(400, 40));
+        jPanel1.add(countHistory, java.awt.BorderLayout.CENTER);
+
+        jPanel3.add(jPanel1, java.awt.BorderLayout.NORTH);
 
         jMenu1.setText("File");
 
@@ -209,15 +211,17 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 986, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 626, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -362,6 +366,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JMenuItem loadMenu;
     private javax.swing.JMenuItem preferencesMenu;
     private javax.swing.JMenuItem saveMenu;
@@ -375,7 +380,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         if(" ".equals(s)) s = "_";
         CountPanel p = data.get(s);
         if (p == null) return;
-        countHistory.setText(countHistory.getText() + s);
+        countHistory.setText(addH(rmH(countHistory.getText()) + s));
         int value;
         try {
             value = Integer.parseInt(p.getValue());
@@ -388,11 +393,11 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-            String s = countHistory.getText();
+            String s = rmH(countHistory.getText());
             if (s.length() >0) {
                 String r = s.substring(s.length()-1, s.length());
                 s = s.substring(0, s.length()-1);
-                countHistory.setText(s);
+                countHistory.setText(addH(s));
                 if("_".equals(r)) r = " ";
                 CountPanel p = data.get(r);
                 if (p == null) return;
@@ -426,5 +431,12 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         else {
             s.setOption("isFullscreen", "false");
         }
+    }
+    private String rmH(String s) {
+        if("".equals(s)) return s;
+        return s.substring(6, s.length()-7);
+    }
+    private String addH(String s) {
+        return "<html>" + s + "</html>";
     }
 }

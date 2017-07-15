@@ -98,6 +98,8 @@ implements Comparable<CountPanel>{
         count.setText("0");
 
         settingsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dogp/resources/settings.png"))); // NOI18N
+        settingsButton.setFocusable(false);
+        settingsButton.setRequestFocusEnabled(false);
         settingsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 settingsButtonActionPerformed(evt);
