@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -120,6 +121,8 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         loadMenu = new javax.swing.JMenuItem();
         preferencesMenu = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        jMenu3 = new javax.swing.JMenu();
+        fullscreenMenu = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(800, 750));
@@ -186,6 +189,19 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
 
         jMenu2.setText("Edit");
         jMenuBar1.add(jMenu2);
+
+        jMenu3.setText("View");
+
+        fullscreenMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.CTRL_MASK));
+        fullscreenMenu.setText("Fullscreen");
+        fullscreenMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fullscreenMenuActionPerformed(evt);
+            }
+        });
+        jMenu3.add(fullscreenMenu);
+
+        jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
 
@@ -289,6 +305,10 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         }
     }//GEN-LAST:event_saveMenuActionPerformed
 
+    private void fullscreenMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fullscreenMenuActionPerformed
+        toggleFullscreen(JFrame.MAXIMIZED_BOTH == this.getExtendedState());
+    }//GEN-LAST:event_fullscreenMenuActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -324,10 +344,21 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         });
     }
 
+    public void toggleFullscreen(boolean isFullscreen) {
+        if (isFullscreen) {
+            this.setExtendedState(JFrame.NORMAL);
+        }
+        else {
+            this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        }
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel countHistory;
+    private javax.swing.JMenuItem fullscreenMenu;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -341,9 +372,9 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     public void keyTyped(KeyEvent e) {
         e.consume();
         String s = Character.toString(e.getKeyChar());
+        if(" ".equals(s)) s = "_";
         CountPanel p = data.get(s);
         if (p == null) return;
-        if(" ".equals(s)) s = "_";
         countHistory.setText(countHistory.getText() + s);
         int value;
         try {
@@ -373,8 +404,8 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
                     p.setValue("0");
                 }
             }
-        e.consume();
         }
+        e.consume();
     }
 
     @Override
@@ -388,6 +419,12 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         }
         if ("".equals(s.getOption("csv.quote"))) {
             s.setOption("csv.quote", "\"");
+        }
+        if (Boolean.parseBoolean(s.getOption("isFullscreen", "false"))) {
+            toggleFullscreen(false);
+        }
+        else {
+            s.setOption("isFullscreen", "false");
         }
     }
 }
