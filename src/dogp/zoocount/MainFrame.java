@@ -115,7 +115,8 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         title = new javax.swing.JLabel();
-        countHistory = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        countHistory = new javax.swing.JTextPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         saveMenu = new javax.swing.JMenuItem();
@@ -150,14 +151,12 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         title.setText("Start counting");
         jPanel1.add(title, java.awt.BorderLayout.NORTH);
 
-        countHistory.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        countHistory.setFocusable(false);
-        countHistory.setMaximumSize(new java.awt.Dimension(400, 40));
-        countHistory.setName(""); // NOI18N
-        countHistory.setPreferredSize(new java.awt.Dimension(400, 40));
-        countHistory.setRequestFocusEnabled(false);
-        countHistory.setSize(new java.awt.Dimension(400, 40));
-        jPanel1.add(countHistory, java.awt.BorderLayout.CENTER);
+        jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        countHistory.setEditable(false);
+        jScrollPane2.setViewportView(countHistory);
+
+        jPanel1.add(jScrollPane2, java.awt.BorderLayout.SOUTH);
 
         jPanel3.add(jPanel1, java.awt.BorderLayout.NORTH);
 
@@ -358,7 +357,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel countHistory;
+    private javax.swing.JTextPane countHistory;
     private javax.swing.JMenuItem fullscreenMenu;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -367,6 +366,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JMenuItem loadMenu;
     private javax.swing.JMenuItem preferencesMenu;
     private javax.swing.JMenuItem saveMenu;
@@ -380,7 +380,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         if(" ".equals(s)) s = "_";
         CountPanel p = data.get(s);
         if (p == null) return;
-        countHistory.setText(addH(rmH(countHistory.getText()) + s));
+        countHistory.setText(countHistory.getText() + s);
         int value;
         try {
             value = Integer.parseInt(p.getValue());
@@ -393,11 +393,11 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-            String s = rmH(countHistory.getText());
+            String s = countHistory.getText();
             if (s.length() >0) {
                 String r = s.substring(s.length()-1, s.length());
                 s = s.substring(0, s.length()-1);
-                countHistory.setText(addH(s));
+                countHistory.setText(s);
                 if("_".equals(r)) r = " ";
                 CountPanel p = data.get(r);
                 if (p == null) return;
@@ -431,12 +431,5 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         else {
             s.setOption("isFullscreen", "false");
         }
-    }
-    private String rmH(String s) {
-        if("".equals(s)) return s;
-        return s.substring(6, s.length()-7);
-    }
-    private String addH(String s) {
-        return "<html>" + s + "</html>";
     }
 }
