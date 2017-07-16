@@ -10,6 +10,8 @@ import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
@@ -53,6 +56,13 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     }
     private void moreComponents(){
         jPanel2.setLayout(new GridLayout(7, 9, 3, 3));
+        createCountPanels();
+        this.addKeyListener(this);
+        jPanel1.addKeyListener(this);
+        jPanel2.addKeyListener(this);
+        countHistory.addKeyListener(this);
+    }
+    private void createCountPanels() {
         // Numbers 0-9
         for (int i=0; i<10; i++) {
             addPanel(Integer.toString(i));
@@ -67,22 +77,26 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         }
         // ...and the spacebar
         addPanel("_");
-        this.addKeyListener(this);
-        jPanel1.addKeyListener(this);
-        jPanel2.addKeyListener(this);
-        countHistory.addKeyListener(this);
     }
     
-    private void addPanel(String key){
+    private void addPanel(String key, String v, String name, String shortName) {
         CountPanel value;
         if ("_".equals(key)) {
             key = "_";
         }
-        value = new CountPanel(key, 0);
+        if (data.get(key) != null) {
+            return;
+        }
+        value = new CountPanel(key, v);
+        value.setCharName(name);
+        value.setCharShortName(shortName);
         value.addKeyListener(this);
         value.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         data.put(key, value);
         jPanel2.add(value);
+    }
+    private void addPanel(String key) {
+        addPanel(key, "0", "", "");
     }
     
    private static MainFrame main;
@@ -183,6 +197,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         });
         jMenu1.add(saveAsMenu);
 
+        loadMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
         loadMenu.setText("Open");
         loadMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -264,7 +279,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     }//GEN-LAST:event_preferencesMenuActionPerformed
 
     private void loadMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadMenuActionPerformed
-        // TODO add your handling code here:
+        openXLSX();
     }//GEN-LAST:event_loadMenuActionPerformed
 
     private void saveMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuActionPerformed
@@ -280,7 +295,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     }//GEN-LAST:event_saveAsMenuActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        clearData();
+        clearData(false);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void save(boolean saveAs) {
@@ -472,13 +487,18 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         }
     }
 
-    private void clearData() {
+    private boolean clearData(boolean force) {
         JCheckBox counts = new JCheckBox("Check this to clear current counts");
         counts.setSelected(true);
         JCheckBox names = new JCheckBox(
             "Check this to clear names and short names"
         );
         names.setSelected(false);
+        if (force) {
+            names.setSelected(true);
+            names.setEnabled(false);
+            counts.setEnabled(false);
+        }
         JComponent[] input = new JComponent[] {
             new JLabel("Clear current counts and names"),
             counts,
@@ -497,7 +517,80 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
                     list.get(i).clearNames();
                 }
             }
+            return true;
         }
+        return false;
+    }
 
+    private void openXLSX() {
+        if (!clearData(true)) {
+            return;
+        }
+        JFileChooser fc;
+         if(this.file != null) {
+             fc = new JFileChooser(new File(this.file).getParentFile());
+         }
+         else {
+             fc = new JFileChooser();
+         }
+         fc.setAcceptAllFileFilterUsed(false);
+         fc.setFileFilter(new FileFilter() {
+             @Override
+             public boolean accept(File f) {
+                 return f.getName().endsWith(".xlsx");
+             }
+
+             @Override
+             public String getDescription() {
+                 return "Excel spreadsheet files (.xlsx)";
+             }
+         });
+         int i = fc.showOpenDialog(main);
+         if (i == JFileChooser.CANCEL_OPTION) {
+             return;
+         }
+         else {
+             if (readXLSX(fc.getSelectedFile())) {
+                 this.file = fc.getSelectedFile().getName();
+             }
+         }
+    }
+
+    private boolean readXLSX(File selectedFile) {
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(selectedFile);
+            Workbook wb = new HSSFWorkbook(fis);
+            Sheet s = wb.getSheet("Data");
+            jPanel2.removeAll();
+            data.clear();
+            for (int i = 1; i <= s.getLastRowNum(); i++) {
+                Row r = s.getRow(i);
+                String name = r.getCell(0).getStringCellValue();
+                String shortName = r.getCell(1).getStringCellValue();
+                String charName = r.getCell(2).getStringCellValue();
+                String value = r.getCell(3).getStringCellValue();
+                if ("".equals(value)) {
+                    continue;
+                }
+                addPanel(charName, value, name, shortName);
+            }
+            wb.close();
+            fis.close();
+            createCountPanels();
+            this.repaint();
+            this.revalidate();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                fis.close();
+            } catch (IOException ex) {
+                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return true;
     }
 }
