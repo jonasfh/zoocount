@@ -24,11 +24,11 @@ implements Comparable<CountPanel>{
      * @param text
      * @param value
      */
-    public CountPanel(String text, int value) {
+    public CountPanel(String text, String value) {
         initComponents();
         countChar.setText(text);
         character = text;
-        count.setText(Integer.toString(value));
+        count.setText(value);
         setOrdering(CountPanel.counter++);
     }
 
