@@ -120,6 +120,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         saveMenu = new javax.swing.JMenuItem();
+        saveAsMenu = new javax.swing.JMenuItem();
         loadMenu = new javax.swing.JMenuItem();
         preferencesMenu = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
@@ -162,6 +163,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
 
         jMenu1.setText("File");
 
+        saveMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
         saveMenu.setText("Save");
         saveMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -169,6 +171,15 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
             }
         });
         jMenu1.add(saveMenu);
+
+        saveAsMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        saveAsMenu.setText("Save as...");
+        saveAsMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveAsMenuActionPerformed(evt);
+            }
+        });
+        jMenu1.add(saveAsMenu);
 
         loadMenu.setText("Open");
         loadMenu.addActionListener(new java.awt.event.ActionListener() {
@@ -245,9 +256,24 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     }//GEN-LAST:event_loadMenuActionPerformed
 
     private void saveMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuActionPerformed
+        save(false);
+    }//GEN-LAST:event_saveMenuActionPerformed
+
+    private void fullscreenMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fullscreenMenuActionPerformed
+        toggleFullscreen(JFrame.MAXIMIZED_BOTH == this.getExtendedState());
+    }//GEN-LAST:event_fullscreenMenuActionPerformed
+
+    private void saveAsMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuActionPerformed
+        save(true);
+    }//GEN-LAST:event_saveAsMenuActionPerformed
+
+    private void save(boolean saveAs) {
         try {
-            if (this.file == null) {
+            if (this.file == null || saveAs) {
                 JFileChooser fc = new JFileChooser();
+                if(this.file != null) {
+                    fc.setSelectedFile(new File(this.file));
+                }
                 fc.setAcceptAllFileFilterUsed(false);
                 fc.setFileFilter(new FileFilter() {
                     @Override
@@ -306,11 +332,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         } catch (EncryptedDocumentException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_saveMenuActionPerformed
-
-    private void fullscreenMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fullscreenMenuActionPerformed
-        toggleFullscreen(JFrame.MAXIMIZED_BOTH == this.getExtendedState());
-    }//GEN-LAST:event_fullscreenMenuActionPerformed
+    }
 
     /**
      * @param args the command line arguments
@@ -369,6 +391,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JMenuItem loadMenu;
     private javax.swing.JMenuItem preferencesMenu;
+    private javax.swing.JMenuItem saveAsMenu;
     private javax.swing.JMenuItem saveMenu;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
@@ -409,8 +432,8 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
                     p.setValue("0");
                 }
             }
-        }
         e.consume();
+        }
     }
 
     @Override
