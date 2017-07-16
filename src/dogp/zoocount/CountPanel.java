@@ -26,7 +26,7 @@ implements Comparable<CountPanel>{
      */
     public CountPanel(String text, int value) {
         initComponents();
-        charAndName.setText(text);
+        countChar.setText(text);
         character = text;
         count.setText(Integer.toString(value));
         setOrdering(CountPanel.counter++);
@@ -35,9 +35,10 @@ implements Comparable<CountPanel>{
     @Override
     public void addKeyListener(KeyListener l) {
         super.addKeyListener(l);
-        charAndName.addKeyListener(l);
+        countChar.addKeyListener(l);
         count.addKeyListener(l);
         settingsButton.addKeyListener(l);
+        shortNameLabel.addKeyListener(l);
     }
     public String getValue() {
         return count.getText();
@@ -59,9 +60,16 @@ implements Comparable<CountPanel>{
     }
     public void setCharName(String s) {
         name = s;
+        shortNameLabel.setToolTipText(s);
     }
     public void setCharShortName(String s) {
         shortname = s;
+        if ("".equals(s)) {
+            shortNameLabel.setText("");
+        }
+        else {
+            shortNameLabel.setText(s + ": ");
+        }
     }
    /**
      * @return the ordering
@@ -87,15 +95,28 @@ implements Comparable<CountPanel>{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        charAndName = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        shortNameLabel = new javax.swing.JLabel();
+        countChar = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
         count = new javax.swing.JLabel();
         settingsButton = new javax.swing.JButton();
 
-        charAndName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        charAndName.setText("A");
+        setMinimumSize(new java.awt.Dimension(0, 0));
+        setPreferredSize(new java.awt.Dimension(0, 0));
+        setLayout(new java.awt.BorderLayout());
+
+        jPanel1.add(shortNameLabel);
+
+        countChar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        countChar.setText("A");
+        jPanel1.add(countChar);
+
+        add(jPanel1, java.awt.BorderLayout.NORTH);
 
         count.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         count.setText("0");
+        jPanel2.add(count);
 
         settingsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dogp/resources/settings.png"))); // NOI18N
         settingsButton.setFocusable(false);
@@ -105,36 +126,9 @@ implements Comparable<CountPanel>{
                 settingsButtonActionPerformed(evt);
             }
         });
+        jPanel2.add(settingsButton);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(count, javax.swing.GroupLayout.DEFAULT_SIZE, 18, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(settingsButton))
-                    .addComponent(charAndName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(charAndName)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(count)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(settingsButton)
-                        .addContainerGap())))
-        );
+        add(jPanel2, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     private void settingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsButtonActionPerformed
@@ -150,11 +144,6 @@ implements Comparable<CountPanel>{
         if (result == JOptionPane.OK_OPTION) {
             setCharName(name.getText().trim());
             setCharShortName(shortname.getText().trim());
-            String display = this.character;
-            if (this.shortname.length()>0) {
-                display += ": " + this.shortname;
-            }
-            this.charAndName.setText(display);
         }
     }//GEN-LAST:event_settingsButtonActionPerformed
 
@@ -197,13 +186,26 @@ implements Comparable<CountPanel>{
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel charAndName;
     private javax.swing.JLabel count;
+    private javax.swing.JLabel countChar;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JButton settingsButton;
+    private javax.swing.JLabel shortNameLabel;
     // End of variables declaration//GEN-END:variables
 
     @Override
     public int compareTo(CountPanel o) {
         return this.getOrdering() - o.getOrdering();
+    }
+
+    public void clearCounts() {
+        count.setText("0");
+    }
+    public void clearNames() {
+        shortNameLabel.setText("");
+        shortNameLabel.setToolTipText("");
+        shortname = "";
+        name = "";
     }
 }

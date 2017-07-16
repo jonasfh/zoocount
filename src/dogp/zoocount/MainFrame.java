@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -124,6 +125,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         loadMenu = new javax.swing.JMenuItem();
         preferencesMenu = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         fullscreenMenu = new javax.swing.JMenuItem();
 
@@ -150,7 +152,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         title.setFont(new java.awt.Font("Lucida Grande", 0, 36)); // NOI18N
         title.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         title.setText("Start counting");
-        jPanel1.add(title, java.awt.BorderLayout.NORTH);
+        jPanel1.add(title, java.awt.BorderLayout.CENTER);
 
         jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -200,6 +202,16 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Edit");
+
+        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem1.setText("Clear data...");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem1);
+
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("View");
@@ -267,6 +279,10 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         save(true);
     }//GEN-LAST:event_saveAsMenuActionPerformed
 
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        clearData();
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     private void save(boolean saveAs) {
         try {
             if (this.file == null || saveAs) {
@@ -302,7 +318,6 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
 
             List<CountPanel> list = new ArrayList<>(data.values());
             Collections.sort(list);
-            Iterator<CountPanel> iter = list.iterator();
             boolean all = Boolean.parseBoolean(
                 Settings.getInstance().getOption("general.saveAllValues")
             );
@@ -385,6 +400,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -454,5 +470,34 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         else {
             s.setOption("isFullscreen", "false");
         }
+    }
+
+    private void clearData() {
+        JCheckBox counts = new JCheckBox("Check this to clear current counts");
+        counts.setSelected(true);
+        JCheckBox names = new JCheckBox(
+            "Check this to clear names and short names"
+        );
+        names.setSelected(false);
+        JComponent[] input = new JComponent[] {
+            new JLabel("Clear current counts and names"),
+            counts,
+            names,
+        };
+        int result = JOptionPane.showConfirmDialog(this, input);
+        if (result == JOptionPane.OK_OPTION) {
+            List<CountPanel> list = new ArrayList<>(data.values());
+            Collections.sort(list);
+            for (int i = 0; i<list.size(); i++) {
+                if (counts.isSelected()) {
+                    list.get(i).clearCounts();
+                    countHistory.setText("");
+                }
+                if (names.isSelected()) {
+                    list.get(i).clearNames();
+                }
+            }
+        }
+
     }
 }
