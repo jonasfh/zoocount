@@ -118,7 +118,7 @@ implements Comparable<CountPanel>{
         count.setText("0");
         jPanel2.add(count);
 
-        settingsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dogp/resources/settings.png"))); // NOI18N
+        settingsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dogp/zoocount/resources/settings.png"))); // NOI18N
         settingsButton.setFocusable(false);
         settingsButton.setRequestFocusEnabled(false);
         settingsButton.addActionListener(new java.awt.event.ActionListener() {
