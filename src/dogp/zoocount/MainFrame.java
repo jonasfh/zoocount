@@ -160,7 +160,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         loadMenu = new javax.swing.JMenuItem();
         preferencesMenu = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        clearDataMenu = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         fullscreenMenu = new javax.swing.JMenuItem();
 
@@ -255,14 +255,14 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
 
         jMenu2.setText("Edit");
 
-        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem1.setText("Clear data...");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        clearDataMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        clearDataMenu.setText("Clear data...");
+        clearDataMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                clearDataMenuActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem1);
+        jMenu2.add(clearDataMenu);
 
         jMenuBar1.add(jMenu2);
 
@@ -316,7 +316,10 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     }//GEN-LAST:event_preferencesMenuActionPerformed
 
     private void loadMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadMenuActionPerformed
-        openXLSX();
+        if (openXLSX()) {
+            setMessage("File opened successfully!");
+            currentFileDisplay.setText(file);
+        }
     }//GEN-LAST:event_loadMenuActionPerformed
 
     private void saveMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuActionPerformed
@@ -337,9 +340,11 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         }
     }//GEN-LAST:event_saveAsMenuActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        clearData(false);
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    private void clearDataMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearDataMenuActionPerformed
+        if (clearData(false)) {
+            setMessage("Data cleared successfully");
+        }
+    }//GEN-LAST:event_clearDataMenuActionPerformed
 
     private boolean save(boolean saveAs) {
         try {
@@ -454,6 +459,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem clearDataMenu;
     private javax.swing.JTextPane countHistory;
     private javax.swing.JLabel currentFileDisplay;
     private javax.swing.JLabel currentFileLabel;
@@ -462,7 +468,6 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -572,9 +577,9 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         return false;
     }
 
-    private void openXLSX() {
+    private boolean openXLSX() {
         if (!clearData(true)) {
-            return;
+            return false;
         }
         JFileChooser fc;
          if(this.file != null) {
@@ -597,13 +602,14 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
          });
          int i = fc.showOpenDialog(main);
          if (i == JFileChooser.CANCEL_OPTION) {
-             return;
+             return false;
          }
          else {
              if (readXLSX(fc.getSelectedFile())) {
                  this.file = fc.getSelectedFile().getName();
              }
          }
+         return true;
     }
 
     private boolean readXLSX(File selectedFile) {
@@ -630,6 +636,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
             createCountPanels();
             this.repaint();
             this.revalidate();
+            return true;
         } catch (FileNotFoundException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -641,6 +648,6 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
                 Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return true;
+        return false;
     }
 }
