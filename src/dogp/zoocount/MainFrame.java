@@ -311,6 +311,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         int result = JOptionPane.showConfirmDialog(this, input);
         if (result == JOptionPane.OK_OPTION) {
             Settings.getInstance().importPreferences(text.getText());
+            setMessage("Preferences saved successfully!");
         }
 
     }//GEN-LAST:event_preferencesMenuActionPerformed
