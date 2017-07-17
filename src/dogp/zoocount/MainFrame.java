@@ -7,6 +7,8 @@ package dogp.zoocount;
 
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -18,9 +20,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
@@ -31,6 +31,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
+import javax.swing.Timer;
 import javax.swing.filechooser.FileFilter;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -107,6 +109,20 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         return main;
     }
 
+    public void setMessage(String message) {
+        statusLabel.setText(message);
+        Timer timer = new Timer(5000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (message.equals(statusLabel.getText())) {
+                    statusLabel.setText("");
+                }
+            }
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
     /**
      *
      */
@@ -132,6 +148,11 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         title = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         countHistory = new javax.swing.JTextPane();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
+        currentFileLabel = new javax.swing.JLabel();
+        currentFileDisplay = new javax.swing.JLabel();
+        statusLabel = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         saveMenu = new javax.swing.JMenuItem();
@@ -166,7 +187,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         title.setFont(new java.awt.Font("Lucida Grande", 0, 36)); // NOI18N
         title.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         title.setText("Start counting");
-        jPanel1.add(title, java.awt.BorderLayout.CENTER);
+        jPanel1.add(title, java.awt.BorderLayout.NORTH);
 
         jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -174,6 +195,22 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         jScrollPane2.setViewportView(countHistory);
 
         jPanel1.add(jScrollPane2, java.awt.BorderLayout.SOUTH);
+
+        jPanel4.setMinimumSize(new java.awt.Dimension(0, 0));
+        jPanel4.setPreferredSize(new java.awt.Dimension(0, 40));
+        jPanel4.setSize(new java.awt.Dimension(0, 40));
+        jPanel4.setLayout(new java.awt.BorderLayout());
+
+        jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        currentFileLabel.setText("Content currently saved to:");
+        jPanel5.add(currentFileLabel);
+        jPanel5.add(currentFileDisplay);
+
+        jPanel4.add(jPanel5, java.awt.BorderLayout.PAGE_START);
+        jPanel4.add(statusLabel, java.awt.BorderLayout.CENTER);
+
+        jPanel1.add(jPanel4, java.awt.BorderLayout.CENTER);
 
         jPanel3.add(jPanel1, java.awt.BorderLayout.NORTH);
 
@@ -250,14 +287,14 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 986, Short.MAX_VALUE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 626, Short.MAX_VALUE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 716, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -283,7 +320,10 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     }//GEN-LAST:event_loadMenuActionPerformed
 
     private void saveMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuActionPerformed
-        save(false);
+        if (save(false)) {
+            setMessage("File successfully saved!");
+            currentFileDisplay.setText(file);
+        }
     }//GEN-LAST:event_saveMenuActionPerformed
 
     private void fullscreenMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fullscreenMenuActionPerformed
@@ -291,14 +331,17 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     }//GEN-LAST:event_fullscreenMenuActionPerformed
 
     private void saveAsMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuActionPerformed
-        save(true);
+        if (save(true)) {
+            setMessage("File successfully saved!");
+            currentFileDisplay.setText(file);
+        }
     }//GEN-LAST:event_saveAsMenuActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         clearData(false);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
-    private void save(boolean saveAs) {
+    private boolean save(boolean saveAs) {
         try {
             if (this.file == null || saveAs) {
                 JFileChooser fc = new JFileChooser();
@@ -319,7 +362,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
                 });
                 int i = fc.showSaveDialog(main);
                 if (i == JFileChooser.CANCEL_OPTION) {
-                    return;
+                    return false;
                 }
                 else {
                     this.file = fc.getSelectedFile().getName();
@@ -357,11 +400,13 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
             OutputStream out = new FileOutputStream(file);
             wb.write(out);
             out.close();
+            return true;
         } catch (IOException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (EncryptedDocumentException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return false;
     }
 
     /**
@@ -410,6 +455,8 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextPane countHistory;
+    private javax.swing.JLabel currentFileDisplay;
+    private javax.swing.JLabel currentFileLabel;
     private javax.swing.JMenuItem fullscreenMenu;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -419,11 +466,14 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JMenuItem loadMenu;
     private javax.swing.JMenuItem preferencesMenu;
     private javax.swing.JMenuItem saveAsMenu;
     private javax.swing.JMenuItem saveMenu;
+    private javax.swing.JLabel statusLabel;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
 
