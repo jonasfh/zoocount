@@ -51,10 +51,12 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
      */
     public void setFile(String file) {
         this.file = file;
-        Settings.getInstance().setOption(
-            "cwd",
-            new File(file).getParentFile().getAbsolutePath()
-        );
+        if (file != null) {
+            Settings.getInstance().setOption(
+                "cwd",
+                new File(file).getParentFile().getAbsolutePath()
+            );
+        }
     }
 
     private final HashMap<String, CountPanel> data = new HashMap(); 
@@ -169,6 +171,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         saveMenu = new javax.swing.JMenuItem();
         saveAsMenu = new javax.swing.JMenuItem();
         loadMenu = new javax.swing.JMenuItem();
+        importMenu = new javax.swing.JMenuItem();
         preferencesMenu = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         clearDataMenu = new javax.swing.JMenuItem();
@@ -254,6 +257,15 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         });
         jMenu1.add(loadMenu);
 
+        importMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        importMenu.setText("Import setup from file");
+        importMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                importMenuActionPerformed(evt);
+            }
+        });
+        jMenu1.add(importMenu);
+
         preferencesMenu.setText("Preferences...");
         preferencesMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -328,6 +340,9 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     }//GEN-LAST:event_preferencesMenuActionPerformed
 
     private void loadMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadMenuActionPerformed
+        if (!clearData(true, false)) {
+            return;
+        }
         if (openXLSX()) {
             setMessage("File opened successfully!");
             currentFileDisplay.setText(file);
@@ -353,10 +368,22 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     }//GEN-LAST:event_saveAsMenuActionPerformed
 
     private void clearDataMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearDataMenuActionPerformed
-        if (clearData(false)) {
+        if (clearData(false, false)) {
             setMessage("Data cleared successfully");
         }
     }//GEN-LAST:event_clearDataMenuActionPerformed
+
+    private void importMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importMenuActionPerformed
+        if (!clearData(true, false)) {
+            return;
+        }
+        if (openXLSX()) {
+            setMessage("File imported successfully!");
+            currentFileDisplay.setText("");
+        }
+        clearData(true, true);
+        setFile(null);
+    }//GEN-LAST:event_importMenuActionPerformed
 
     private boolean save(boolean saveAs) {
         try {
@@ -473,6 +500,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     private javax.swing.JLabel currentFileDisplay;
     private javax.swing.JLabel currentFileLabel;
     private javax.swing.JMenuItem fullscreenMenu;
+    private javax.swing.JMenuItem importMenu;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
@@ -551,7 +579,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         }
     }
 
-    private boolean clearData(boolean force) {
+    private boolean clearData(boolean force, boolean quiet) {
         JCheckBox counts = new JCheckBox("Check this to clear current counts");
         counts.setSelected(true);
         JCheckBox names = new JCheckBox(
@@ -563,13 +591,16 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
             names.setEnabled(false);
             counts.setEnabled(false);
         }
-        JComponent[] input = new JComponent[] {
-            new JLabel("Clear current counts and names"),
-            counts,
-            names,
-        };
-        int result = JOptionPane.showConfirmDialog(this, input);
-        if (result == JOptionPane.OK_OPTION) {
+        int result = Integer.MIN_VALUE;
+        if (!quiet) {
+            JComponent[] input = new JComponent[] {
+                new JLabel("Clear current counts and names"),
+                counts,
+                names,
+            };
+            result = JOptionPane.showConfirmDialog(this, input);
+        }
+        if (result == JOptionPane.OK_OPTION || quiet) {
             List<CountPanel> list = new ArrayList<>(data.values());
             Collections.sort(list);
             for (int i = 0; i<list.size(); i++) {
@@ -587,9 +618,6 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     }
 
     private boolean openXLSX() {
-        if (!clearData(true)) {
-            return false;
-        }
         JFileChooser fc = getFileChooser();
         fc.setAcceptAllFileFilterUsed(false);
         fc.setFileFilter(new FileFilter() {
