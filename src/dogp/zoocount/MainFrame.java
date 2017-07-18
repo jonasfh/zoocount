@@ -46,6 +46,17 @@ import org.apache.poi.ss.usermodel.Workbook;
  */
 public class MainFrame extends javax.swing.JFrame implements KeyListener{
 
+    /**
+     * @param file the file to set
+     */
+    public void setFile(String file) {
+        this.file = file;
+        Settings.getInstance().setOption(
+            "cwd",
+            new File(file).getParentFile().getAbsolutePath()
+        );
+    }
+
     private final HashMap<String, CountPanel> data = new HashMap(); 
     private String file = null;
     /**
@@ -368,9 +379,9 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
                     return false;
                 }
                 else {
-                    this.file = fc.getSelectedFile().getAbsolutePath();
+                    this.setFile(fc.getSelectedFile().getAbsolutePath());
                     if (!this.file.endsWith(".xlsx")) {
-                        this.file += ".xlsx";
+                        this.setFile(this.file + ".xlsx");
                     }
                 }
             }
@@ -598,7 +609,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         }
         else {
             if (readXLSX(fc.getSelectedFile())) {
-                this.file = fc.getSelectedFile().getAbsolutePath();
+                this.setFile(fc.getSelectedFile().getAbsolutePath());
             }
         }
         return true;
@@ -647,6 +658,9 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         JFileChooser fc;
          if(this.file != null) {
              fc = new JFileChooser(new File(this.file).getParentFile());
+         }
+         else if (!"".equals(Settings.getInstance().getOption("cwd", ""))) {
+             fc = new JFileChooser(Settings.getInstance().getOption("cwd"));
          }
          else {
              fc = new JFileChooser();
