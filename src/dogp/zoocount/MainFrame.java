@@ -350,10 +350,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
     private boolean save(boolean saveAs) {
         try {
             if (this.file == null || saveAs) {
-                JFileChooser fc = new JFileChooser();
-                if(this.file != null) {
-                    fc.setSelectedFile(new File(this.file));
-                }
+                JFileChooser fc = getFileChooser();
                 fc.setAcceptAllFileFilterUsed(false);
                 fc.setFileFilter(new FileFilter() {
                     @Override
@@ -371,7 +368,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
                     return false;
                 }
                 else {
-                    this.file = fc.getSelectedFile().getName();
+                    this.file = fc.getSelectedFile().getAbsolutePath();
                     if (!this.file.endsWith(".xlsx")) {
                         this.file += ".xlsx";
                     }
@@ -582,35 +579,29 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         if (!clearData(true)) {
             return false;
         }
-        JFileChooser fc;
-         if(this.file != null) {
-             fc = new JFileChooser(new File(this.file).getParentFile());
-         }
-         else {
-             fc = new JFileChooser();
-         }
-         fc.setAcceptAllFileFilterUsed(false);
-         fc.setFileFilter(new FileFilter() {
-             @Override
-             public boolean accept(File f) {
-                 return f.getName().endsWith(".xlsx");
-             }
+        JFileChooser fc = getFileChooser();
+        fc.setAcceptAllFileFilterUsed(false);
+        fc.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return f.getName().endsWith(".xlsx");
+            }
 
-             @Override
-             public String getDescription() {
-                 return "Excel spreadsheet files (.xlsx)";
-             }
-         });
-         int i = fc.showOpenDialog(main);
-         if (i == JFileChooser.CANCEL_OPTION) {
-             return false;
-         }
-         else {
-             if (readXLSX(fc.getSelectedFile())) {
-                 this.file = fc.getSelectedFile().getName();
-             }
-         }
-         return true;
+            @Override
+            public String getDescription() {
+                return "Excel spreadsheet files (.xlsx)";
+            }
+        });
+        int i = fc.showOpenDialog(main);
+        if (i == JFileChooser.CANCEL_OPTION) {
+            return false;
+        }
+        else {
+            if (readXLSX(fc.getSelectedFile())) {
+                this.file = fc.getSelectedFile().getAbsolutePath();
+            }
+        }
+        return true;
     }
 
     private boolean readXLSX(File selectedFile) {
@@ -650,5 +641,16 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
             }
         }
         return false;
+    }
+
+    private JFileChooser getFileChooser() {
+        JFileChooser fc;
+         if(this.file != null) {
+             fc = new JFileChooser(new File(this.file).getParentFile());
+         }
+         else {
+             fc = new JFileChooser();
+         }
+         return fc;
     }
 }
