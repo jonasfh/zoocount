@@ -39,6 +39,8 @@ implements Comparable<CountPanel>{
         count.addKeyListener(l);
         settingsButton.addKeyListener(l);
         shortNameLabel.addKeyListener(l);
+        jPanel1.addKeyListener(l);
+        jPanel2.addKeyListener(l);
     }
     public String getValue() {
         return count.getText();
