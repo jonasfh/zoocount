@@ -6,6 +6,7 @@
 package dogp.zoocount;
 
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -25,6 +26,7 @@ implements Comparable<CountPanel>{
      * @param value
      */
     public CountPanel(String text, String value) {
+        this.smudgifiers = new ArrayList<>();
         initComponents();
         countChar.setText(text);
         character = text;
@@ -144,6 +146,12 @@ implements Comparable<CountPanel>{
         };
         int result = JOptionPane.showConfirmDialog(this, input);
         if (result == JOptionPane.OK_OPTION) {
+            if(
+                name.getText().trim().length() > 0 ||
+                shortname.getText().trim().length() > 0
+            ) {
+                fireSmudge(true);
+            }
             setCharName(name.getText().trim());
             setCharShortName(shortname.getText().trim());
         }
@@ -154,6 +162,7 @@ implements Comparable<CountPanel>{
     private String character = "";
     private int ordering = 0;
     private static int counter = 0;
+    private ArrayList<Smudgifier> smudgifiers;
 
     @Override
     public String toString() {
@@ -209,5 +218,16 @@ implements Comparable<CountPanel>{
         shortNameLabel.setToolTipText("");
         shortname = "";
         name = "";
+    }
+    public void addSmudgifier(Smudgifier s) {
+        smudgifiers.add(s);
+    }
+    public void removeSmudgifier(Smudgifier s) {
+        smudgifiers.remove(s);
+    }
+    private void fireSmudge(boolean dirty) {
+        for (Smudgifier s : smudgifiers) {
+            s.smudge(dirty);
+        }
     }
 }

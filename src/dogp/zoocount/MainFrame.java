@@ -34,12 +34,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileFilter;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -52,7 +48,7 @@ import org.apache.poi.ss.usermodel.Workbook;
  * @author jonas
  */
 public class MainFrame extends javax.swing.JFrame
-    implements KeyListener, MouseListener, MouseMotionListener
+    implements KeyListener, MouseListener, MouseMotionListener, Smudgifier
 {
 
     /**
@@ -71,6 +67,8 @@ public class MainFrame extends javax.swing.JFrame
     private final HashMap<String, CountPanel> data = new HashMap(); 
     private String file = null;
     private CountPanel move;
+    private boolean isDirty = false;
+
     /**
      * Creates new form MainFrame
      */
@@ -118,6 +116,7 @@ public class MainFrame extends javax.swing.JFrame
         value.setCharName(name);
         value.setCharShortName(shortName);
         value.addKeyListener(this);
+        value.addSmudgifier(this);
         value.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         data.put(key, value);
         jPanel2.add(value);
@@ -453,6 +452,7 @@ public class MainFrame extends javax.swing.JFrame
             OutputStream out = new FileOutputStream(file);
             wb.write(out);
             out.close();
+            smudge(false);
             return true;
         } catch (IOException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -546,6 +546,7 @@ public class MainFrame extends javax.swing.JFrame
             value = 0;
         }
         p.setValue(Integer.toString(++value));
+        smudge(true);
     }
 
     @Override
@@ -555,6 +556,9 @@ public class MainFrame extends javax.swing.JFrame
             if (s.length() >0) {
                 String r = s.substring(s.length()-1, s.length());
                 s = s.substring(0, s.length()-1);
+                if (s.length() == 0) {
+                    smudge(false);
+                }
                 countHistory.setText(s);
                 if("_".equals(r)) r = " ";
                 CountPanel p = data.get(r);
@@ -592,6 +596,9 @@ public class MainFrame extends javax.swing.JFrame
     }
 
     private boolean clearData(boolean force, boolean quiet) {
+        if (!isDirty) {
+            quiet = true;
+        }
         JCheckBox counts = new JCheckBox("Check this to clear current counts");
         counts.setSelected(true);
         JCheckBox names = new JCheckBox(
@@ -652,6 +659,7 @@ public class MainFrame extends javax.swing.JFrame
                 this.setFile(fc.getSelectedFile().getAbsolutePath());
             }
         }
+        smudge(false);
         return true;
     }
 
@@ -679,6 +687,7 @@ public class MainFrame extends javax.swing.JFrame
             createCountPanels();
             this.repaint();
             this.revalidate();
+            smudge(false);
             return true;
         } catch (FileNotFoundException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -761,6 +770,7 @@ public class MainFrame extends javax.swing.JFrame
                     });
                     t.setRepeats(false);
                     t.start();
+                    smudge(true);
                     this.revalidate();
                     this.repaint();
                 }
@@ -800,5 +810,10 @@ public class MainFrame extends javax.swing.JFrame
 
     @Override
     public void mouseMoved(MouseEvent e) {
+    }
+
+    @Override
+    public void smudge(boolean dirty) {
+        isDirty = dirty;
     }
 }
