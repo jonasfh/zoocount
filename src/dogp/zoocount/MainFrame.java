@@ -6,11 +6,15 @@
 package dogp.zoocount;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,9 +34,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.SwingWorker;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileFilter;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -44,7 +51,9 @@ import org.apache.poi.ss.usermodel.Workbook;
  *
  * @author jonas
  */
-public class MainFrame extends javax.swing.JFrame implements KeyListener{
+public class MainFrame extends javax.swing.JFrame
+    implements KeyListener, MouseListener, MouseMotionListener
+{
 
     /**
      * @param file the file to set
@@ -61,6 +70,7 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
 
     private final HashMap<String, CountPanel> data = new HashMap(); 
     private String file = null;
+    private CountPanel move;
     /**
      * Creates new form MainFrame
      */
@@ -75,6 +85,8 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
         this.addKeyListener(this);
         jPanel1.addKeyListener(this);
         jPanel2.addKeyListener(this);
+        jPanel2.addMouseMotionListener(this);
+        jPanel2.addMouseListener(this);
         countHistory.addKeyListener(this);
     }
     private void createCountPanels() {
@@ -694,5 +706,99 @@ public class MainFrame extends javax.swing.JFrame implements KeyListener{
              fc = new JFileChooser();
          }
          return fc;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        Component c = jPanel2.getComponentAt(e.getX(), e.getY());
+        if (c instanceof CountPanel) {
+            this.move = (CountPanel) c;
+            ((CountPanel) c).setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (e.getComponent().equals(jPanel2)) {
+            Component c = jPanel2.getComponentAt(e.getX(), e.getY());
+            if (c instanceof CountPanel) {
+                CountPanel replace = (CountPanel) c;
+                if(move != null && !move.equals(replace)) {
+                    Component[] comps = jPanel2.getComponents();
+                    int moveint = -1;
+                    int replaceint = -1;
+                    for (int i = 0; i < comps.length; i++) {
+                        if (comps[i].equals(move)) {
+                            moveint = i;
+                        }
+                        if (comps[i].equals(replace)) {
+                            replaceint = i;
+                        }
+                    }
+                    jPanel2.remove(replace);
+                    jPanel2.remove(move);
+                    move.setOrdering(replaceint);
+                    replace.setOrdering(moveint);
+                    if (replaceint > moveint) {
+                        jPanel2.add(replace, moveint);
+                        jPanel2.add(move, replaceint);
+                    }
+                    else {
+                        jPanel2.add(move, replaceint);
+                        jPanel2.add(replace, moveint);
+                    }
+                    Timer t = new Timer(1000, new ActionListener() {
+                        CountPanel p = move;
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            p.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                            replace.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                        }
+                    });
+                    t.setRepeats(false);
+                    t.start();
+                    this.revalidate();
+                    this.repaint();
+                }
+            }
+            this.move = null;
+        }
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        if (e.getComponent().equals(jPanel2)) {
+            Component c = jPanel2.getComponentAt(e.getX(), e.getY());
+            if (c instanceof CountPanel) {
+                CountPanel replace = (CountPanel) c;
+                if(move != null && !move.equals(replace)) {
+                    Component[] comps = jPanel2.getComponents();
+                    for (int i = 0; i < comps.length; i++) {
+                        if (comps[i].equals(replace)) {
+                            ((CountPanel)comps[i]).setBorder(BorderFactory.createLineBorder(Color.RED));
+                        }
+                        else if (!comps[i].equals(move)) {
+                            ((CountPanel)comps[i]).setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
     }
 }
