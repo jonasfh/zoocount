@@ -71,12 +71,18 @@ public class Settings {
     }
 
     private Settings() {
-        options = Preferences.userRoot().node(this.getClass().getName());
-        // Set some defaults
-        if ("".equals(options.get("csv.separator", ""))) {
-            settings.setOption("csv.separator", ",");
-            settings.setOption("csv.quote", "\"");
-            options.putBoolean("general.saveAllValues", false);
+        try {
+            options = Preferences.userRoot().node(getClass().getName());
+
+            // Set some defaults
+            if ("".equals(options.get("csv.separator", ""))) {
+                this.setOption("csv.separator", ",");
+                this.setOption("csv.quote", "\"");
+                options.putBoolean("general.saveAllValues", false);
+            }
+            options.flush();
+        } catch (BackingStoreException ex) {
+            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
