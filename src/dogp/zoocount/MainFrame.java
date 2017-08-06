@@ -66,7 +66,7 @@ public class MainFrame extends javax.swing.JFrame
         }
     }
 
-    private final HashMap<String, CountPanel> data = new HashMap();
+    private final HashMap<String, CountPanel> data = new HashMap<String,CountPanel>();
     private String file = null;
     private CountPanel move;
     private CountPanel replace;
