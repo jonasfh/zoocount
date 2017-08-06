@@ -69,7 +69,9 @@ public class MainFrame extends javax.swing.JFrame
     private final HashMap<String, CountPanel> data = new HashMap();
     private String file = null;
     private CountPanel move;
+    private CountPanel replace;
     private boolean isDirty = false;
+
 
     /**
      * Creates new form MainFrame
@@ -141,7 +143,7 @@ public class MainFrame extends javax.swing.JFrame
      *
      * @param message
      */
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         statusLabel.setText(message);
         Timer timer = new Timer(5000, new ActionListener() {
             @Override
@@ -798,7 +800,6 @@ public class MainFrame extends javax.swing.JFrame
             ((CountPanel) c).setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
         }
     }
-
     /**
      * mouseRelease register when the mouse button is released, and moves a
      * panel if appropriate.
@@ -810,7 +811,7 @@ public class MainFrame extends javax.swing.JFrame
         if (e.getComponent().equals(jPanel2)) {
             Component c = jPanel2.getComponentAt(e.getX(), e.getY());
             if (c instanceof CountPanel) {
-                CountPanel replace = (CountPanel) c;
+                replace = (CountPanel) c;
                 if(move != null && !move.equals(replace)) {
                     Component[] comps = jPanel2.getComponents();
                     int moveint = -1;
