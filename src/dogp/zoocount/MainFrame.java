@@ -651,9 +651,6 @@ public class MainFrame extends javax.swing.JFrame
      * @return
      */
     private boolean clearData(boolean force, boolean quiet) {
-        if (!isDirty) {
-            quiet = true;
-        }
         JCheckBox counts = new JCheckBox("Check this to clear current counts");
         counts.setSelected(true);
         JCheckBox names = new JCheckBox(
@@ -665,8 +662,8 @@ public class MainFrame extends javax.swing.JFrame
             names.setEnabled(false);
             counts.setEnabled(false);
         }
-        int result = Integer.MIN_VALUE;
-        if (!quiet) {
+        int result = JOptionPane.OK_OPTION;
+        if (!quiet || isDirty) {
             JComponent[] input = new JComponent[] {
                 new JLabel("Clear current counts and names"),
                 counts,
@@ -674,7 +671,7 @@ public class MainFrame extends javax.swing.JFrame
             };
             result = JOptionPane.showConfirmDialog(this, input);
         }
-        if (result == JOptionPane.OK_OPTION || quiet) {
+        if (result == JOptionPane.OK_OPTION) {
             List<CountPanel> list = new ArrayList<>(data.values());
             Collections.sort(list);
             for (int i = 0; i<list.size(); i++) {
