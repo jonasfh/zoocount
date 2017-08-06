@@ -17,28 +17,59 @@ import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
 
 /**
+ * The Settings object is more or less just a wrapper around the
+ * java.util.prefs.Preferences - object.
  *
- * @author jonas
+ * @author jonass
  */
 public class Settings {
     private static Settings settings;
     private Preferences options;
 
+    /**
+     * Get an instance of the settings, implemented using
+     * java.util.prefs.Preferences. The implementation makes sure there is only
+     * one instance of the settings object, using the singleton pattern.
+     *
+     * @return the Settings object
+     */
     public static synchronized Settings getInstance() {
         if (settings == null)
             settings=new Settings();
         return settings;
     }
+
+    /**
+     * Set an option.
+     *
+     * @param key option key
+     * @param value option value
+     */
     public void setOption(String key, String value){
         options.put(key, value);
     }
 
+    /**
+     * Get an option
+     *
+     * @param key
+     * @return
+     */
     public String getOption(String key){
         return getOption(key, "");
     }
+
+    /**
+     * Get an option, providing a default value if not set.
+     *
+     * @param key
+     * @param defaultval
+     * @return
+     */
     public String getOption(String key, String defaultval){
         return options.get(key, defaultval);
     }
+
     private Settings() {
         options = Preferences.userRoot().node(this.getClass().getName());
         // Set some defaults
@@ -48,6 +79,14 @@ public class Settings {
             options.putBoolean("general.saveAllValues", false);
         }
     }
+
+    /**
+     * Overriding the toString - method for this object, returning the string
+     * created by java.util.prefs.Preferences exportSubtree - method. This is
+     * used to allow the user to edit the preferences by hand.
+     *
+     * @return an xml with the current preferences.
+     */
     @Override
     public String toString() {
         try {
@@ -72,6 +111,13 @@ public class Settings {
         }
         return "";
     }
+
+    /**
+     * Import an xml-string of preferences in the format that
+     * java.util.prefs.Preferences requires.
+     *
+     * @param s
+     */
     public void importPreferences(String s) {
         try {
             InputStream stream = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));

@@ -52,6 +52,8 @@ public class MainFrame extends javax.swing.JFrame
 {
 
     /**
+     * Set file to save data to
+     *
      * @param file the file to set
      */
     public void setFile(String file) {
@@ -64,7 +66,7 @@ public class MainFrame extends javax.swing.JFrame
         }
     }
 
-    private final HashMap<String, CountPanel> data = new HashMap(); 
+    private final HashMap<String, CountPanel> data = new HashMap();
     private String file = null;
     private CountPanel move;
     private boolean isDirty = false;
@@ -103,7 +105,7 @@ public class MainFrame extends javax.swing.JFrame
         // ...and the spacebar
         addPanel("_");
     }
-    
+
     private void addPanel(String key, String v, String name, String shortName) {
         CountPanel value;
         if ("_".equals(key)) {
@@ -124,8 +126,8 @@ public class MainFrame extends javax.swing.JFrame
     private void addPanel(String key) {
         addPanel(key, "0", "", "");
     }
-    
-   private static MainFrame main;
+
+    private static MainFrame main;
 
     public static synchronized MainFrame getInstance() {
         if (main == null)
@@ -133,6 +135,12 @@ public class MainFrame extends javax.swing.JFrame
         return main;
     }
 
+    /**
+     * Display a message in the messages panel. The message is visible for 5
+     * seconds before it is cleared.
+     *
+     * @param message
+     */
     public void setMessage(String message) {
         statusLabel.setText(message);
         Timer timer = new Timer(5000, new ActionListener() {
@@ -396,6 +404,17 @@ public class MainFrame extends javax.swing.JFrame
         setFile(null);
     }//GEN-LAST:event_importMenuActionPerformed
 
+    /**
+     * Save the current data to file. If a file is not currently set, then a
+     * file dialogue will open, allowing to select an output file. If not set,
+     * a file prefix of .xlsx will be appended to the file name.
+     *
+     * The setting general.saveAllValues will determine if all values are saved,
+     * or only characters that have been changed.
+     *
+     * @param saveAs will always open a file dialogue if set to true
+     * @return
+     */
     private boolean save(boolean saveAs) {
         try {
             if (this.file == null || saveAs) {
@@ -469,7 +488,7 @@ public class MainFrame extends javax.swing.JFrame
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -497,6 +516,11 @@ public class MainFrame extends javax.swing.JFrame
         });
     }
 
+    /**
+     * Make application fill the whole screen.
+     * @param isFullscreen if true app is already in full screen mode, reset
+     * to normal mode
+     */
     public void toggleFullscreen(boolean isFullscreen) {
         if (isFullscreen) {
             this.setExtendedState(JFrame.NORMAL);
@@ -531,6 +555,13 @@ public class MainFrame extends javax.swing.JFrame
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * keyTyped is called when a key is pressed and released. The function
+     * evaluates which key is pressed, and increase the count number for this
+     * key.
+     *
+     * @param e
+     */
    @Override
     public void keyTyped(KeyEvent e) {
         e.consume();
@@ -549,6 +580,13 @@ public class MainFrame extends javax.swing.JFrame
         smudge(true);
     }
 
+    /**
+     * keyPressed is called when a key is pressed down. The function checks if
+     * it is the backspace-key that is pressed. If it is,it undoes the last
+     * key typed.
+     *
+     * @param e
+     */
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
@@ -579,6 +617,13 @@ public class MainFrame extends javax.swing.JFrame
     public void keyReleased(KeyEvent e) {
     }
 
+    /**
+     * Initialize settings for the programme. Includes loading the current
+     * settings, and setting some options if not set. The options are:
+     * csv.separator: defaults to , (comma)
+     * csv.quote: defaults to " (double quote)
+     * isFullscreen: defaults to false
+     */
     private void initSettings() {
         Settings s = Settings.getInstance();
         if ("".equals(s.getOption("csv.separator"))) {
@@ -595,6 +640,16 @@ public class MainFrame extends javax.swing.JFrame
         }
     }
 
+    /**
+     * Clear data in the programme. If the data buffer is dirty, then the user
+     * is propted asking if he really wants to clear all data. By default only
+     * counts are cleared, but the user can also choose to clear names and short
+     * names.
+     *
+     * @param force Clear everyting, unless user cancel operation.
+     * @param quiet Don't prompt user for permission to clear data.
+     * @return
+     */
     private boolean clearData(boolean force, boolean quiet) {
         if (!isDirty) {
             quiet = true;
@@ -636,6 +691,11 @@ public class MainFrame extends javax.swing.JFrame
         return false;
     }
 
+    /**
+     * Open a data file and import counts and names.
+     *
+     * @return true if the file is opened correctly.
+     */
     private boolean openXLSX() {
         JFileChooser fc = getFileChooser();
         fc.setAcceptAllFileFilterUsed(false);
@@ -663,6 +723,12 @@ public class MainFrame extends javax.swing.JFrame
         return true;
     }
 
+    /**
+     * Read the content of an xlsx-file, and update the GUI with the content.
+     *
+     * @param selectedFile
+     * @return
+     */
     private boolean readXLSX(File selectedFile) {
         FileInputStream fis = null;
         try {
@@ -721,6 +787,12 @@ public class MainFrame extends javax.swing.JFrame
     public void mouseClicked(MouseEvent e) {
     }
 
+    /**
+     * mousePressed register when mouse button is pressed, and allow to move a
+     * panel in the gui interface.
+     *
+     * @param e
+     */
     @Override
     public void mousePressed(MouseEvent e) {
         Component c = jPanel2.getComponentAt(e.getX(), e.getY());
@@ -730,6 +802,12 @@ public class MainFrame extends javax.swing.JFrame
         }
     }
 
+    /**
+     * mouseRelease register when the mouse button is released, and moves a
+     * panel if appropriate.
+     *
+     * @param e
+     */
     @Override
     public void mouseReleased(MouseEvent e) {
         if (e.getComponent().equals(jPanel2)) {
@@ -787,6 +865,12 @@ public class MainFrame extends javax.swing.JFrame
     public void mouseExited(MouseEvent e) {
     }
 
+    /**
+     * mouseDragged gives visual feedback for a drag and drop event when moving
+     * the panels in the gui.
+     *
+     * @param e
+     */
     @Override
     public void mouseDragged(MouseEvent e) {
         if (e.getComponent().equals(jPanel2)) {

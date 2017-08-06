@@ -13,6 +13,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 /**
+ * Countpanel holds data for a key on the keyboard. A Key can have a name, a
+ * display name, a count and an order.
  *
  * @author jonas
  */
@@ -22,18 +24,24 @@ implements Comparable<CountPanel>{
 
     /**
      * Creates new form CountPanel
-     * @param text
+     *
+     * @param character
      * @param value
      */
-    public CountPanel(String text, String value) {
+    public CountPanel(String character, String value) {
         this.smudgifiers = new ArrayList<>();
         initComponents();
-        countChar.setText(text);
-        character = text;
+        countChar.setText(character);
+        this.character = character;
         count.setText(value);
         setOrdering(CountPanel.counter++);
     }
 
+    /**
+     * Adds a key listener to all components on the panel
+     *
+     * @param l
+     */
     @Override
     public void addKeyListener(KeyListener l) {
         super.addKeyListener(l);
@@ -44,28 +52,76 @@ implements Comparable<CountPanel>{
         jPanel1.addKeyListener(l);
         jPanel2.addKeyListener(l);
     }
+
+    /**
+     * Get the count value
+     *
+     * @return the current value
+     */
     public String getValue() {
         return count.getText();
     }
+
+    /**
+     * Set the count value
+     *
+     * @param s the value to set
+     */
     public void setValue(String s) {
         count.setText(s);
     }
+
+    /**
+     * Get the character key
+     *
+     * @return the character key
+     */
     public String getChar() {
         return character;
     }
+
+    /**
+     * Get the full name of the character
+     *
+     * @return full name
+     */
     public String getCharName() {
         return name;
     }
+
+    /**
+     * Get the short name / display name of the character
+     *
+     * @return the short name
+     */
     public String getCharShortName() {
         return shortname;
     }
+
+    /**
+     * Set the character key
+     *
+     * @param s the character key
+     */
     public void setChar(String s) {
         character = s;
     }
+
+    /**
+     * Set the character name. This is displayed on hover.
+     *
+     * @param s character name
+     */
     public void setCharName(String s) {
         name = s;
         shortNameLabel.setToolTipText(s);
     }
+
+    /**
+     * Set the character short name, displayed on the UI
+     *
+     * @param s the short name
+     */
     public void setCharShortName(String s) {
         shortname = s;
         if ("".equals(s)) {
@@ -75,7 +131,11 @@ implements Comparable<CountPanel>{
             shortNameLabel.setText(s + ": ");
         }
     }
-   /**
+
+    /**
+     * Get the ordering of this panel, used to order the output and the panels
+     * in the UI
+     *
      * @return the ordering
      */
     public int getOrdering() {
@@ -83,6 +143,9 @@ implements Comparable<CountPanel>{
     }
 
     /**
+     * Set the ordering number for this panel. This defines the order when data
+     * is exported to file.
+     *
      * @param ordering the ordering to set
      */
     public void setOrdering(int ordering) {
@@ -164,6 +227,11 @@ implements Comparable<CountPanel>{
     private static int counter = 0;
     private ArrayList<Smudgifier> smudgifiers;
 
+    /**
+     * Overrides toString, returning a csv string
+     *
+     * @return "character","shortname","name","count"
+     */
     @Override
     public String toString() {
         StringBuilder output = new StringBuilder();
@@ -205,26 +273,57 @@ implements Comparable<CountPanel>{
     private javax.swing.JLabel shortNameLabel;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Used when comparing panels against each other, for sorting
+     *
+     * @param o
+     * @return
+     */
     @Override
     public int compareTo(CountPanel o) {
         return this.getOrdering() - o.getOrdering();
     }
 
+    /**
+     * Reset the count for this panel
+     */
     public void clearCounts() {
         count.setText("0");
     }
+
+    /**
+     * Reset the names for this panel to an empty string
+     */
     public void clearNames() {
         shortNameLabel.setText("");
         shortNameLabel.setToolTipText("");
         shortname = "";
         name = "";
     }
+
+    /**
+     * Add a smudgifier to notify if this panel has been smudged
+     *
+     * @param s
+     */
     public void addSmudgifier(Smudgifier s) {
         smudgifiers.add(s);
     }
+
+    /**
+     * Remove a smugifier from this panels list of smugifiers
+     *
+     * @param s
+     */
     public void removeSmudgifier(Smudgifier s) {
         smudgifiers.remove(s);
     }
+
+    /**
+     * Notify smugifiers some value in this panel has changed.
+     *
+     * @param dirty
+     */
     private void fireSmudge(boolean dirty) {
         for (Smudgifier s : smudgifiers) {
             s.smudge(dirty);

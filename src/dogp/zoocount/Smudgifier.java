@@ -6,6 +6,8 @@
 package dogp.zoocount;
 
 /**
+ * Objects implementing this interface can tell it's listeners weather it's data
+ * has changed.
  *
  * @author jonas
  */

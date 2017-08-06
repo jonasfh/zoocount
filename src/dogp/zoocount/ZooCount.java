@@ -9,6 +9,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 /**
+ * ZooCount is the main entry point for the application.
  *
  * @author jonas
  */
@@ -19,12 +20,12 @@ public class ZooCount extends Application {
      */
     public static void main(String[] args) {
         MainFrame frame = MainFrame.getInstance();
-        frame.reveal();        
+        frame.reveal();
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         MainFrame frame = MainFrame.getInstance();
         frame.reveal();
-    }    
+    }
 }
