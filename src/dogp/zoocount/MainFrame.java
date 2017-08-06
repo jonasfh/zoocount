@@ -423,7 +423,7 @@ public class MainFrame extends javax.swing.JFrame
                 fc.setFileFilter(new FileFilter() {
                     @Override
                     public boolean accept(File f) {
-                        return f.getName().endsWith(".xlsx");
+                        return f.getName().endsWith(".xlsx") || f.isDirectory();
                     }
 
                     @Override
@@ -699,7 +699,7 @@ public class MainFrame extends javax.swing.JFrame
         fc.setFileFilter(new FileFilter() {
             @Override
             public boolean accept(File f) {
-                return f.getName().endsWith(".xlsx");
+                return f.getName().endsWith(".xlsx") || f.isDirectory();
             }
 
             @Override
